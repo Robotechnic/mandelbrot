@@ -38,7 +38,7 @@ void ofApp::setup()
 void ofApp::update()
 {
     color.setHsb(0,255,0);
-    float t0 = ofGetElapsedTimef();
+
     if(doUpdate)
     {
         dessin();
@@ -93,62 +93,22 @@ void ofApp::zoomer(double x_z,double y_z,double facteur)
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
-    img.draw(gui.getWidth(),0);
+    //img.draw(gui.getWidth(),0);
     gui.draw();
 }
 void ofApp::dessin()
 {
     widthImg = img.getWidth();
     heightImg = img.getHeight();
-    for(int x=0; x<widthImg; x++)
-    {
-
-        for(int y=0; y<heightImg; y++)
-        {
-            c_x = (x - (widthImg)/2)/zoom/1000+centerX;
-            c_y = (y-heightImg/2)/zoom/1000+centerY;
-            z_x = c_x;
-            z_y = c_y;
-            iter = 0;
-            do
-            {
-
-            newZX = z_x;
-            //mandelbrot *3
-            //z_x = z_x*z_x*z_x*z_x - 6 * z_x * z_x * z_y * z_y + + z_y*z_y*z_y*z_y + c_x;
-            //z_y = 4 * newZX * newZX * newZX * z_y - 4 * z_y * z_y * z_y * newZX + c_y;
-
-            //mandelbrat normal
-            /*z_x = z_x*z_x - z_y * z_y + c_x;
-            z_y = newZX*z_y*2 + c_y;*/
-
-            z_x = z_x*z_x - z_y * z_y  + c_x;
-            z_y = newZX*z_y*2 + c_y;
-
-            //fractale trigo hyperbolique
-            //z_x =sinh(z_x)*cos(z_y)+(c_x*c_x-c_y*c_y)/(pow(c_x,10)+pow(c_y,10));
-            //z_y = cos(z_x)*sinh(z_y)-(2*c_x*c_y)/(pow(c_x,10)+pow(c_y,10));
-            if (iter >= iterMax) {
-                //ofLogError() << "Debug1 " << iter;
-                color = ofColor::fromHsb(0,0,0);
-                break;
-            }
-            if (z_x*z_x + z_y*z_y > escapeRadius) {
-                //ofLogError() << "Debug2 " << iter;
-             color = ofColor::fromHsb((iter*1)%255, 255, 255);
-              break;
-            }
-            iter += 1;
-
-            } while (true);
-            //ofLogError() << "Iteration (" << x << ","<<y<<") : " <<iter;
-
-            img.setColor(x,y,color);//dessin de la fractale dans l'image
-        }
-    }
-    /*ofLogWarning() << "Iteration took " << (ofGetElapsedTimef() - t0);
-    ofLogWarning() << "Zoom: " << zoom;*/
-    img.update();
+    testThread = new renderThread();
+    testThread->waitForThread();
+    testThread->getRender().draw(0,0);
+    //img.update();
+    testThread->startRender(zoom,centerX,centerY,escapeRadius,0,0,widthImg,heightImg);
+}
+void ofApp::updateRenderImage(int x,int y, ofImage render){
+    cout<<"Callback"<<endl;
+    img = render;
 }
 void ofApp::zero()
 {

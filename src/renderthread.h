@@ -1,6 +1,9 @@
 #ifndef RENDERTHREAD_H
 #define RENDERTHREAD_H
 
+
+#include <iostream>
+using namespace std;
 #include <ofThread.h>
 #include <ofColor.h>
 #include <ofImage.h>

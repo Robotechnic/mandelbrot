@@ -21,6 +21,7 @@ void renderThread::startRender(int zoom, int centerX, int centerY, double escape
 
 void renderThread::threadedFunction(){
     //the render of the image
+    cout<<"Start render"<<endl;
     for(int x=xMin; x<xMax; x++)
     {
         for(int y=yMin; y<yMax; y++)
@@ -28,6 +29,9 @@ void renderThread::threadedFunction(){
             this->render.setColor(x,y,this->renderPoint(x,y));
         }
     }
+    render.update();
+    cout<<"Stop render"<<endl;
+
     this->stopThread();
 }
 
@@ -64,8 +68,8 @@ ofColor renderThread::renderPoint(int x, int y){
     }
     if (z_x*z_x + z_y*z_y > escapeRadius) {
         //ofLogError() << "Debug2 " << iter;
-     color = ofColor::fromHsb((iter*1)%255, 255, 255);
-      break;
+        color = ofColor::fromHsb((iter*1)%255, 255, 255);
+        break;
     }
     iter += 1;
 

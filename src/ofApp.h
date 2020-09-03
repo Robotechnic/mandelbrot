@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxPanel.h"
 #include "ofxButton.h"
+#include "renderthread.h"
 
 class ofApp : public ofBaseApp{
 	
@@ -12,6 +13,7 @@ public:
     void draw();
     void dessin();
     void zoomer(double x_y, double y_z, double facteur);
+    void updateRenderImage(int x, int y, ofImage render);
     void zero();
     void screen_shoot();
 	void keyPressed  (int key);
@@ -65,4 +67,6 @@ private:
     string cheminfichier;
     int i,zeros;
     bool creerVideo;
+
+    renderThread *testThread;
 };
