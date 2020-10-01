@@ -1,5 +1,6 @@
 #include "ofApp.h"
 
+
 //--------------------------------------------------------------
 void ofApp::setup()
 {
@@ -29,9 +30,8 @@ void ofApp::setup()
     captureStop.addListener(this,&ofApp::stopcapture);
     gui.setPosition(0,0);
     widthg = gui.getWidth();
-    img.allocate(width, height, OF_IMAGE_COLOR);
     capture = false;
-
+    waitForRender = false;
 }
 
 //--------------------------------------------------------------
@@ -44,24 +44,13 @@ void ofApp::update()
         dessin();
         doUpdate = false;
     }
-    if (ofGetMousePressed()&&ofGetMouseX()>widthg)
+    if (creerVideo&&i<(int)click.size())
     {
-        y = ofGetMouseY();
-        x = ofGetMouseX()-widthg;
-        if(capture)
-        {
-            click.push_back(glm::tvec3<double>(ofGetMouseX(),ofGetMouseY(),zoom));
-            click.push_back(glm::tvec3<double>(ofGetMouseX(),ofGetMouseY(),zoom*1.05));
-            cout<<"ajout "<<click.size()<<endl;
-        }
-        zoomer(x,y,1.1);
-    }
-    if (creerVideo&&i<click.size())
-    {
+        if (!waitForRender){
             i++;
-            if (i >= click.size())
+            if (i >= (int)click.size())
             {
-                string commande = "ffmpeg -framerate 20 -start_number 001  -i \"captures/"+nom.getParameter().toString()+"/img-%0"+std::to_string(zeros)+"d.png\" -c:v libx264 -strict -2 -preset slow -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" -f mp4 \"captures/"+nom.getParameter().toString()+"/video.mp4\"";
+                string commande = "ffmpeg -framerate 20 -start_number 001  -i \"captures/"+nom.getParameter().toString()+"/img-%0"+std::to_string(zeros)+"d.png\" -c:v libx264 -strict -2 -preset slow -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" -f mp4 \"captures/"+nom.getParameter().toString()+"/"+nom.getParameter().toString()+".mp4\"";
                 cout<<commande<<endl;
                 int result = system(commande.c_str());
                 cout<<"Résultat: "<<result<<endl;
@@ -71,9 +60,18 @@ void ofApp::update()
             cout <<click[i].x<<" "<<click[i].y<<endl;
             zoom = click[i].z;
             zoomer(click[i].x,click[i].y,1);
+            this->waitForRender = true;
+        } else if((!thread1.getDoRender())&&
+                  (!thread2.getDoRender())&&
+                  (!thread3.getDoRender())&&
+                  (!thread4.getDoRender())){
             std::stringstream stream;
             stream<<std::setfill('0')<< std::setw(zeros)<<i;
-            cout<<img.save(cheminfichier+"img-"+stream.str()+".png")<<endl;
+            ofImage img;
+            img.grabScreen(widthg,0,ofGetWidth(),ofGetHeight());
+            this->waitForRender = false;
+        }
+            //
 
     }
 }
@@ -93,23 +91,44 @@ void ofApp::zoomer(double x_z,double y_z,double facteur)
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
-    //img.draw(gui.getWidth(),0);
+    widthImg = ofGetWidth()-widthg;
+    heightImg = ofGetHeight();
+    img1.draw(gui.getWidth(),0);
+    img2.draw(gui.getWidth()+widthImg/2,0);
+    img3.draw(gui.getWidth(),heightImg/2);
+    img4.draw(gui.getWidth()+widthImg/2,heightImg/2);
     gui.draw();
 }
 void ofApp::dessin()
 {
-    widthImg = img.getWidth();
-    heightImg = img.getHeight();
-    testThread = new renderThread();
-    testThread->waitForThread();
-    testThread->getRender().draw(0,0);
-    //img.update();
-    testThread->startRender(zoom,centerX,centerY,escapeRadius,0,0,widthImg,heightImg);
+    widthImg = ofGetWidth()-widthg;
+    heightImg = ofGetHeight();
+    thread1.startRender(img1,iterMax,zoom,centerX,centerY,escapeRadius,
+                        0,
+                        0,
+                        widthImg/2,
+                        heightImg/2,
+                        widthImg,heightImg);
+    thread2.startRender(img2,iterMax,zoom,centerX,centerY,escapeRadius,
+                        widthImg/2,
+                        0,
+                        widthImg,
+                        heightImg/2,
+                        widthImg,heightImg);
+    thread3.startRender(img3,iterMax,zoom,centerX,centerY,escapeRadius,
+                        0,
+                        heightImg/2,
+                        widthImg/2,
+                        heightImg,
+                        widthImg,heightImg);
+    thread4.startRender(img4,iterMax,zoom,centerX,centerY,escapeRadius,
+                        widthImg/2,
+                        heightImg/2,
+                        widthImg,
+                        heightImg,
+                        widthImg,heightImg);
 }
-void ofApp::updateRenderImage(int x,int y, ofImage render){
-    cout<<"Callback"<<endl;
-    img = render;
-}
+
 void ofApp::zero()
 {
     zoom = 0.1;
@@ -121,6 +140,8 @@ void ofApp::screen_shoot()
 {
     string titr;
     titr+="../images/screen "+std::to_string(zoom)+" "+std::to_string(x)+" "+std::to_string(y)+".png";
+    ofImage img;
+    img.grabScreen(widthg,0,ofGetWidth(),ofGetHeight());
     img.update();
     cout<<img.save(titr)<<endl;
 }
@@ -182,11 +203,22 @@ void ofApp::keyReleased(int key){
 void ofApp::mouseDragged(int x, int y, int button){
 
 }
-
+*/
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
+    if (x>widthg)
+    {
+        x -= widthg;
+        if(capture)
+        {
+            click.push_back(glm::tvec3<double>(ofGetMouseX(),ofGetMouseY(),zoom));
+            click.push_back(glm::tvec3<double>(ofGetMouseX(),ofGetMouseY(),zoom*1.05));
+            cout<<"ajout "<<click.size()<<endl;
+        }
+        zoomer(x,y,1.1);
+    }
 }
-
+/*
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
 
@@ -207,7 +239,8 @@ void ofApp::windowResized(int w, int h){
     doUpdate = true;
     width = w-widthg;
     height = h;
-    img.allocate(width, height, OF_IMAGE_COLOR);
+    this->dessin();
+    //img.allocate(width, height, OF_IMAGE_COLOR);
 }
 
 //--------------------------------------------------------------

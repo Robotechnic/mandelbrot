@@ -13,7 +13,6 @@ public:
     void draw();
     void dessin();
     void zoomer(double x_y, double y_z, double facteur);
-    void updateRenderImage(int x, int y, ofImage render);
     void zero();
     void screen_shoot();
 	void keyPressed  (int key);
@@ -24,15 +23,14 @@ public:
     void nbZero();
     void caractere();
     /*void mouseMoved(int x, int y );
-	void mouseDragged(int x, int y, int button);
+    void mouseDragged(int x, int y, int button);*/
 	void mousePressed(int x, int y, int button);
-	void mouseReleased(int x, int y, int button);
+    /*void mouseReleased(int x, int y, int button);
 	void mouseEntered(int x, int y);
     void mouseExited(int x, int y);
 	void gotMessage(ofMessage msg);
     void dragEvent(ofDragInfo dragInfo);*/
 private:
-    ofImage img;
     ofColor color;
     bool doUpdate;
     float zoom;
@@ -66,7 +64,8 @@ private:
     //variables de creation video
     string cheminfichier;
     int i,zeros;
-    bool creerVideo;
+    bool creerVideo,waitForRender;
 
-    renderThread *testThread;
+    ofImage img1,img2,img3,img4;
+    renderThread thread1, thread2,thread3,thread4;
 };
