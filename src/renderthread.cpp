@@ -8,11 +8,11 @@ renderThread::renderThread()
 }
 
 renderThread::~renderThread(){
-    this->cancelRender();
     this->doRender = false;
     this->renderChannel.close();
     this->treatedChannel.close();
     ofRemoveListener(ofEvents().update, this, &renderThread::update);
+    waitForThread(true);
 }
 
 void renderThread::startRender(ofImage &render,double iterMax,double zoom, double centerX, double centerY, double escapeRadius, double xMin, double yMin, double xMax, double yMax,double widthImg, double heightImg){

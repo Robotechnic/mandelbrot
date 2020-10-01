@@ -69,9 +69,18 @@ void ofApp::update()
             stream<<std::setfill('0')<< std::setw(zeros)<<i;
             ofImage img;
             img.grabScreen(widthg,0,ofGetWidth(),ofGetHeight());
+            img.update();
+            cout<<img.save(cheminfichier+"img-"+stream.str()+".png")<<endl;
             this->waitForRender = false;
         }
-            //
+//        cout<<((!thread1.getDoRender())&&
+//              (!thread2.getDoRender())&&
+//              (!thread3.getDoRender())&&
+//              (!thread4.getDoRender()))<<" ";
+//        cout<<(!thread1.getDoRender())<<" " ;
+//         cout<<       (!thread2.getDoRender())<<" ";
+//          cout<<      (!thread3.getDoRender())<<" ";
+//          cout<<      (!thread4.getDoRender())<<endl;
 
     }
 }

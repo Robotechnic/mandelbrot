@@ -17,7 +17,7 @@ public:
     ~renderThread();
     void startRender(ofImage& render, double iterMax, double zoom, double centerX, double centerY, double escapeRadius, double xMin, double yMin, double xMax, double yMax, double widthImg, double heightImg);
     bool getDoRender(){
-        return this->doRender;
+        return !(this->renderChannel.empty() && this->treatedChannel.empty());
     }
 
 private:
