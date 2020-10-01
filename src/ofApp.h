@@ -16,7 +16,7 @@ public:
     void screen_shoot();
 	void keyPressed  (int key);
     void windowResized(int w, int h);
-    void keyReleased(int key);
+    //void keyReleased(int key);
     void startcapture();
     void stopcapture();
     void nbZero();

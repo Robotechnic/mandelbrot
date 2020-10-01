@@ -38,7 +38,6 @@ void ofApp::setup()
 void ofApp::update()
 {
     color.setHsb(0,255,0);
-    float t0 = ofGetElapsedTimef();
     if(doUpdate)
     {
         dessin();
@@ -56,12 +55,12 @@ void ofApp::update()
         }
         zoomer(x,y,1.1);
     }
-    if (creerVideo&&i<click.size())
+    if (creerVideo&&i<(int)click.size())
     {
             i++;
-            if (i >= click.size())
+            if (i >= (int)click.size())
             {
-                string commande = "ffmpeg -framerate 20 -start_number 001  -i \"captures/"+nom.getParameter().toString()+"/img-%0"+std::to_string(zeros)+"d.png\" -c:v libx264 -strict -2 -preset slow -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" -f mp4 \"captures/"+nom.getParameter().toString()+"/video.mp4\"";
+                string commande = "ffmpeg -framerate 20 -start_number 001  -i \"captures/"+nom.getParameter().toString()+"/img-%0"+std::to_string(zeros)+"d.png\" -c:v libx264 -strict -2 -preset slow -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" -f mp4 -y \"captures/"+nom.getParameter().toString()+"/"+nom.getParameter().toString()+".mp4\"";
                 cout<<commande<<endl;
                 int result = system(commande.c_str());
                 cout<<"Résultat: "<<result<<endl;
@@ -187,7 +186,7 @@ void ofApp::nbZero()
 void ofApp::caractere()
 {
     string traitement = nom.getParameter().toString();
-    for (int m = 0; m<traitement.size();m++)
+    for (int m = 0; m<(int)traitement.size();m++)
     {
         if (traitement[m] == ' ')
             traitement[m] = '_';
@@ -208,9 +207,9 @@ void ofApp::keyPressed(int key){
 }
 
 //--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-        doUpdate = true;
-}
+//void ofApp::keyReleased(int key){
+//        doUpdate = true;
+//}
 //--------------------------------------------------------------
 /*void ofApp::mouseMoved(int x, int y ){
 
