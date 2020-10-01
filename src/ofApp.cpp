@@ -38,7 +38,6 @@ void ofApp::setup()
 void ofApp::update()
 {
     color.setHsb(0,255,0);
-    float t0 = ofGetElapsedTimef();
     if(doUpdate)
     {
         dessin();
@@ -50,18 +49,18 @@ void ofApp::update()
         x = ofGetMouseX()-widthg;
         if(capture)
         {
-            click.push_back(glm::tvec3<double>(ofGetMouseX(),ofGetMouseY(),zoom));
-            click.push_back(glm::tvec3<double>(ofGetMouseX(),ofGetMouseY(),zoom*1.05));
+            click.push_back(glm::tvec3<float128_type>(ofGetMouseX(),ofGetMouseY(),zoom));
+            click.push_back(glm::tvec3<float128_type>(ofGetMouseX(),ofGetMouseY(),zoom*1.05));
             cout<<"ajout "<<click.size()<<endl;
         }
         zoomer(x,y,1.1);
     }
-    if (creerVideo&&i<click.size())
+    if (creerVideo&&i<(int)click.size())
     {
             i++;
-            if (i >= click.size())
+            if (i >= (int)click.size())
             {
-                string commande = "ffmpeg -framerate 20 -start_number 001  -i \"captures/"+nom.getParameter().toString()+"/img-%0"+std::to_string(zeros)+"d.png\" -c:v libx264 -strict -2 -preset slow -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" -f mp4 \"captures/"+nom.getParameter().toString()+"/video.mp4\"";
+                string commande = "ffmpeg -framerate 20 -start_number 001  -i \"captures/"+nom.getParameter().toString()+"/img-%0"+std::to_string(zeros)+"d.png\" -c:v libx264 -strict -2 -preset slow -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" -f mp4 -y \"captures/"+nom.getParameter().toString()+"/"+nom.getParameter().toString()+".mp4\"";
                 cout<<commande<<endl;
                 int result = system(commande.c_str());
                 cout<<"Résultat: "<<result<<endl;
@@ -77,13 +76,13 @@ void ofApp::update()
 
     }
 }
-void ofApp::zoomer(double x_z,double y_z,double facteur)
+void ofApp::zoomer(float128_type x_z,float128_type y_z,float128_type facteur)
 {
     cout<<ofGetMousePressed()<<endl;
-    double clickX = x_z - widthImg/2;
-    double clickY = y_z - heightImg/2;
-    clickX /= double (zoom*1000);
-    clickY /= double (zoom*1000);
+    float128_type clickX = x_z - widthImg/2;
+    float128_type clickY = y_z - heightImg/2;
+    clickX /= float128_type (zoom*1000);
+    clickY /= float128_type (zoom*1000);
     zoom *= facteur;
     centerX += clickX;
     centerY += clickY;
@@ -159,7 +158,7 @@ void ofApp::zero()
 void ofApp::screen_shoot()
 {
     string titr;
-    titr+="../images/screen "+std::to_string(zoom)+" "+std::to_string(x)+" "+std::to_string(y)+".png";
+    titr+="../images/screen "+std::to_string(double(zoom))+" "+std::to_string(x)+" "+std::to_string(y)+".png";
     img.update();
     cout<<img.save(titr)<<endl;
 }
@@ -187,7 +186,7 @@ void ofApp::nbZero()
 void ofApp::caractere()
 {
     string traitement = nom.getParameter().toString();
-    for (int m = 0; m<traitement.size();m++)
+    for (int m = 0; m<(int)traitement.size();m++)
     {
         if (traitement[m] == ' ')
             traitement[m] = '_';
@@ -208,9 +207,9 @@ void ofApp::keyPressed(int key){
 }
 
 //--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-        doUpdate = true;
-}
+//void ofApp::keyReleased(int key){
+//        doUpdate = true;
+//}
 //--------------------------------------------------------------
 /*void ofApp::mouseMoved(int x, int y ){
 

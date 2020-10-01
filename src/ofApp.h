@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxPanel.h"
 #include "ofxButton.h"
+#include <boost/multiprecision/float128.hpp>
 
 class ofApp : public ofBaseApp{
 	
@@ -11,12 +12,12 @@ public:
 	void update();
     void draw();
     void dessin();
-    void zoomer(double x_y, double y_z, double facteur);
+    void zoomer(float128_type x_y, float128_type y_z, float128_type facteur);
     void zero();
     void screen_shoot();
-	void keyPressed  (int key);
+    void keyPressed  (int key);
     void windowResized(int w, int h);
-    void keyReleased(int key);
+    //void keyReleased(int key);
     void startcapture();
     void stopcapture();
     void nbZero();
@@ -33,25 +34,25 @@ private:
     ofImage img;
     ofColor color;
     bool doUpdate;
-    float zoom;
-    double centerX;
-    double centerY;
-    double escapeRadius;
+    float128_type zoom;
+    float128_type centerX;
+    float128_type centerY;
+    float128_type escapeRadius;
     int iterMax, width, height;
-    double c_x;
-    double c_y;
-    double z_x;
-    double z_y;
+    float128_type c_x;
+    float128_type c_y;
+    float128_type z_x;
+    float128_type z_y;
     int iter;
-    double newZX;
-    double widthg;
-    double widthImg,heightImg;
+    float128_type newZX;
+    float128_type widthg;
+    float128_type widthImg,heightImg;
     int x;
     int y;
     bool capture;
-    double pourcentage_capture;
+    float128_type pourcentage_capture;
     ofKeyEventArgs keyEvent;
-    vector <glm::tvec3<double>>click;
+    vector <glm::tvec3<float128_type>>click;
     ofxPanel gui;
     ofxButton reset;
     ofxButton screen;
