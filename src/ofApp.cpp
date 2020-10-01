@@ -8,7 +8,6 @@ void ofApp::setup()
     width = ofGetWidth();
     height = ofGetHeight();
     zoom = double(0.1);
-    doUpdate = true;
     centerX = 0;
     centerY = 0;
     escapeRadius = 4;
@@ -32,25 +31,22 @@ void ofApp::setup()
     widthg = gui.getWidth();
     capture = false;
     waitForRender = false;
+    imageDraw = false;
+
+    dessin();
 }
 
 //--------------------------------------------------------------
 void ofApp::update()
 {
     color.setHsb(0,255,0);
-
-    if(doUpdate)
-    {
-        dessin();
-        doUpdate = false;
-    }
     if (creerVideo&&i<(int)click.size())
     {
         if (!waitForRender){
             i++;
             if (i >= (int)click.size())
             {
-                string commande = "ffmpeg -framerate 20 -start_number 001  -i \"captures/"+nom.getParameter().toString()+"/img-%0"+std::to_string(zeros)+"d.png\" -c:v libx264 -strict -2 -preset slow -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" -f mp4 \"captures/"+nom.getParameter().toString()+"/"+nom.getParameter().toString()+".mp4\"";
+                string commande = "ffmpeg -framerate 20 -start_number 001  -i \"captures/"+nom.getParameter().toString()+"/img-%0"+std::to_string(zeros)+"d.png\" -c:v libx264 -strict -2 -preset slow -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" -f mp4 -y \"captures/"+nom.getParameter().toString()+"/"+nom.getParameter().toString()+".mp4\"";
                 cout<<commande<<endl;
                 int result = system(commande.c_str());
                 cout<<"Résultat: "<<result<<endl;
@@ -61,26 +57,14 @@ void ofApp::update()
             zoom = click[i].z;
             zoomer(click[i].x,click[i].y,1);
             this->waitForRender = true;
-        } else if((!thread1.getDoRender())&&
-                  (!thread2.getDoRender())&&
-                  (!thread3.getDoRender())&&
-                  (!thread4.getDoRender())){
+            this->imageDraw = false;
+        } else if(imageDraw){
+            cout<<"Render "<<thread1.getDoRender()<<" "<<thread2.getDoRender()<<" "<<thread3.getDoRender()<<" "<<thread4.getDoRender()<<endl;
             std::stringstream stream;
             stream<<std::setfill('0')<< std::setw(zeros)<<i;
-            ofImage img;
-            img.grabScreen(widthg,0,ofGetWidth(),ofGetHeight());
-            img.update();
             cout<<img.save(cheminfichier+"img-"+stream.str()+".png")<<endl;
             this->waitForRender = false;
         }
-//        cout<<((!thread1.getDoRender())&&
-//              (!thread2.getDoRender())&&
-//              (!thread3.getDoRender())&&
-//              (!thread4.getDoRender()))<<" ";
-//        cout<<(!thread1.getDoRender())<<" " ;
-//         cout<<       (!thread2.getDoRender())<<" ";
-//          cout<<      (!thread3.getDoRender())<<" ";
-//          cout<<      (!thread4.getDoRender())<<endl;
 
     }
 }
@@ -96,7 +80,7 @@ void ofApp::zoomer(double x_z,double y_z,double facteur)
     centerY += clickY;
     centerX -= clickX/facteur;
     centerY -= clickY/facteur;
-    doUpdate = true;
+    dessin();
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -106,10 +90,18 @@ void ofApp::draw(){
     img2.draw(gui.getWidth()+widthImg/2,0);
     img3.draw(gui.getWidth(),heightImg/2);
     img4.draw(gui.getWidth()+widthImg/2,heightImg/2);
+    if ((!thread1.getDoRender())&&
+        (!thread2.getDoRender())&&
+        (!thread3.getDoRender())&&
+        (!thread4.getDoRender()) && this->waitForRender){
+        this->imageDraw = true;
+        img.grabScreen(widthg,0,ofGetWidth(),ofGetHeight());
+    }
     gui.draw();
 }
 void ofApp::dessin()
 {
+    cout<<"Dessin"<<endl;
     widthImg = ofGetWidth()-widthg;
     heightImg = ofGetHeight();
     thread1.startRender(img1,iterMax,zoom,centerX,centerY,escapeRadius,
@@ -179,7 +171,7 @@ void ofApp::nbZero()
 void ofApp::caractere()
 {
     string traitement = nom.getParameter().toString();
-    for (int m = 0; m<traitement.size();m++)
+    for (int m = 0; m<(int)traitement.size();m++)
     {
         if (traitement[m] == ' ')
             traitement[m] = '_';
@@ -200,9 +192,9 @@ void ofApp::keyPressed(int key){
 }
 
 //--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-        doUpdate = true;
-}
+//void ofApp::keyReleased(int key){
+//        doUpdate = true;
+//}
 //--------------------------------------------------------------
 /*void ofApp::mouseMoved(int x, int y ){
 
@@ -245,9 +237,9 @@ void ofApp::mouseExited(int x, int y){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-    doUpdate = true;
-    width = w-widthg;
-    height = h;
+    this->widthg = this->gui.getWidth();
+    this->width = w-widthg;
+    this->height = h;
     this->dessin();
     //img.allocate(width, height, OF_IMAGE_COLOR);
 }

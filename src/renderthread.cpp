@@ -29,7 +29,7 @@ void renderThread::startRender(ofImage &render,double iterMax,double zoom, doubl
     entry.widthImg = widthImg;
     entry.heightImg = heightImg;
 
-    entry.image->setUseTexture(false);
+    //entry.image->setUseTexture(false);
     entry.image->allocate(xMax-xMin, yMax-yMin, OF_IMAGE_COLOR);
 
     this->renderChannel.send(entry);
@@ -40,7 +40,7 @@ void renderThread::threadedFunction(){
     ofImageEntry current;
     while (this->doRender){
         if (this->renderChannel.receive(current)){
-          //  cout<<"Start render"<<endl;
+            cout<<"Start render"<<endl;
             for(int x=current.xMin; x<current.xMax; x++)
             {
                 for(int y=current.yMin; y<current.yMax; y++)
@@ -52,8 +52,7 @@ void renderThread::threadedFunction(){
             this->treatedChannel.send(current);
         }
     }
-   // cout<<"Stop thread"<<endl;
-
+    cout<<"Stop thread"<<endl;
 }
 
 ofColor renderThread::renderPoint(double x, double y,double zoom,double centerX,double centerY,double escapeRadius,double iterMax,double widthImg,double heightImg){
@@ -100,10 +99,12 @@ ofColor renderThread::renderPoint(double x, double y,double zoom,double centerX,
 }
 
 void renderThread::update(ofEventArgs &a){
+
     ofImageEntry render;
-    if (this->treatedChannel.tryReceive(render)){
-       // cout<<"New render"<<endl;
-        render.image->setUseTexture(true);
+    if (this->treatedChannel.tryReceive(render) == true){
+        //cout<<"Update "<<ofGetElapsedTimeMillis()<< endl;
+        //render.image->setUseTexture(true);
         render.image->update();
+        this->doRender = true;
     }
 }

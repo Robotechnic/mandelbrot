@@ -17,7 +17,7 @@ public:
     void screen_shoot();
 	void keyPressed  (int key);
     void windowResized(int w, int h);
-    void keyReleased(int key);
+    //void keyReleased(int key);
     void startcapture();
     void stopcapture();
     void nbZero();
@@ -32,7 +32,6 @@ public:
     void dragEvent(ofDragInfo dragInfo);*/
 private:
     ofColor color;
-    bool doUpdate;
     float zoom;
     double centerX;
     double centerY;
@@ -64,7 +63,8 @@ private:
     //variables de creation video
     string cheminfichier;
     int i,zeros;
-    bool creerVideo,waitForRender;
+    ofImage img;
+    bool creerVideo,waitForRender,imageDraw;
 
     ofImage img1,img2,img3,img4;
     renderThread thread1, thread2,thread3,thread4;
